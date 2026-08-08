@@ -31,7 +31,7 @@ Two skills form the **general toolkit** (any domain). Two more are **optional** 
 | **Question it answers** | “How do we keep **allowlisted** work running for **H hours** (or multi-day windows) without me babysitting chat?” |
 | **Works for** | Any project with a job list: tests, refactors, inventory, codegen batches, doc rebuilds, eval suites |
 | **Pattern** | **Worker** (time budget) + **Watchdog** (restart if dead) + **heartbeat/status** + **pause file** + **allowlist** + strip secrets |
-| **Hours** | Human-set (e.g. 8 / 24 / 48). Multi-day is fine **if** the machine stays available and the watchdog can restart mid-window |
+| **Hours** | Human-set (e.g. 8 / 24 / 48). Multi-day is fine **if** the machine stays **awake**, and the watchdog can restart mid-window |
 | **Call** | `/autonomous-worker-ops` or “design a 48h worker+watchdog for these jobs” |
 
 **Why it exists:** Chat sessions die. Laptops sleep. Agents crash. A **worker + watchdog** is ops infrastructure, not “hope the terminal stays open.”
@@ -39,7 +39,16 @@ Two skills form the **general toolkit** (any domain). Two more are **optional** 
 **Limits (accurate):**  
 - Skill documents the pattern; **you** still need scripts + launchd/cron/systemd in *your* repo.  
 - Jobs must be **allowlisted** — not open-ended “keep coding until perfect.”  
-- **Not** auto-deploy, auto-trade, or unbounded internet actions.
+- **Not** auto-deploy, auto-trade, or unbounded internet actions.  
+- **Host sleep** still kills the run if the laptop suspends — worker/watchdog cannot fix that alone.
+
+**Stay awake (optional host tips):**
+
+| OS | Prefer first | Optional |
+|----|----------------|----------|
+| **macOS** | Built-in `caffeinate -dims` (can wrap the worker process) | **[Amphetamine](https://apps.apple.com/app/amphetamine/id937984704)** (Mac App Store) — simple timed “don’t sleep” sessions; not required |
+| **Windows** | Power settings: sleep **Never** while plugged in for the window; or `powercfg` standby timeout changes (restore after) | Third-party keep-awake tools (e.g. Caffeine / Don't Sleep) — optional, no single standard |
+| **Most reliable** | Always-on mini-PC / VPS with suspend disabled | — |
 
 ---
 

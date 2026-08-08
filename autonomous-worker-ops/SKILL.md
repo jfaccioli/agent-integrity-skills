@@ -75,7 +75,26 @@ Human sets H hours + allowlist + pause policy
 | **Opt-in flags** | Risky job classes off unless `FEATURE_X=1` |
 | **External scheduler** | launchd / cron / systemd / CI schedule — **not** the chat session |
 
-A **skill alone cannot** install launchd or keep a laptop awake. You still need OS scheduling + machine not fully asleep (or a VPS).
+A **skill alone cannot** install launchd or keep a laptop awake. You still need OS scheduling + machine not fully asleep (or a VPS / always-on host).
+
+## Keep the host awake (laptop reality)
+
+Worker + watchdog only help if the **OS does not suspend** the machine for the whole window. Prefer a plugged-in always-on host when possible.
+
+| Platform | Built-in (prefer first) | Optional apps |
+|----------|-------------------------|---------------|
+| **macOS** | `caffeinate -dims` (or wrap the worker: `caffeinate -dims ./worker …`) prevents idle sleep while running; System Settings → Energy / Battery → options when plugged in | **[Amphetamine](https://apps.apple.com/app/amphetamine/id937984704)** (free Mac App Store) — easy toggle sessions (“prevent sleep for 48h”, allow display off). Useful when you want GUI control without remembering flags |
+| **Windows** | Settings → System → Power: set sleep to **Never** while plugged in for the run; or `powercfg /change standby-timeout-ac 0` (and restore after). Task Scheduler for watchdog | Third-party “keep awake” utilities exist (e.g. **Caffeine**, **Don't Sleep**, Microsoft PowerToys-related workflows) — quality varies; treat as optional. No single standard equal to Amphetamine |
+| **Linux** | `systemd-inhibit`, `caffeinate`-like tools, or disable suspend on AC in power settings; `cron`/`systemd` timers for watchdog | Desktop “caffeine” applets (GNOME/KDE) optional |
+| **Best reliability** | Small always-on mini-PC / VPS with no sleep | — |
+
+**Guidance for agents using this skill:**
+
+1. Mention host-sleep as a first-class failure mode (alongside process crash).  
+2. Recommend **built-ins first** (`caffeinate` on Mac, power plan on Windows).  
+3. Mention **Amphetamine on Mac** as a convenient optional app — **not required**, not a dependency of the skill.  
+4. Do not assume Windows users have Amphetamine; point at power settings + optional keep-awake tools.  
+5. Closing the lid on many laptops still suspends unless configured otherwise — call that out.
 
 ## Human knobs
 
@@ -101,7 +120,7 @@ Document these in the project README when you adopt the pattern.
 ## When the user asks to “run for N hours”
 
 1. Confirm **goal** and **allowlisted tasks** (bullet list).  
-2. Confirm **H hours** and machine will stay available.  
+2. Confirm **H hours** and machine will stay available (**awake**: caffeinate / Amphetamine / power plan / VPS).  
 3. Confirm **forbidden** actions (money, keys, force-push, etc.).  
 4. Propose or wire: worker script, watchdog, status paths, pause path.  
 5. Start / restart path; show how to verify:
@@ -142,8 +161,9 @@ When porting: **copy the pattern**, not the crypto job catalog.
 [ ] Secrets stripped from child env
 [ ] Watchdog interval (~1h) via OS scheduler
 [ ] Stale heartbeat → restart worker
+[ ] Host sleep prevented for the window (caffeinate / Amphetamine / power plan / VPS)
 [ ] Logs directory
-[ ] README: how to start / pause / set hours
+[ ] README: how to start / pause / set hours / stay awake
 [ ] Promotion path documented → dual-agent-review (separate skill)
 [ ] No live/money/keys in allowlist
 ```
