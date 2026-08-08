@@ -29,10 +29,10 @@ Portable promotion/review protocol (inspired by dual-Grok / handoff systems).
 
 1. Reviewer **does not** implement fixes in the same breath as ACCEPT (review-only).  
 2. Decisions are exactly one of: **ACCEPT** | **REVISE** | **HUMAN_REQUIRED**.  
-3. **At most one REVISE round.** Second material disagreement → HUMAN_REQUIRED.  
+3. **REVISE policy:** For **production authorization / permission**, at most **one** REVISE then HUMAN_REQUIRED. For complex engineering still in explore/draft, more revise cycles are OK until stuck or promoting.  
 4. **HUMAN_REQUIRED cannot be self-cleared** by producer or same-model reviewer.  
-5. Review text alone is not scientific/financial evidence; cite artefacts.  
-6. Never authorize credentials, live trading, order placement, or irreversible data destruction without human.
+5. Review text alone is not proof of correctness; cite artefacts, tests, contracts.  
+6. Never authorize use of live secrets, production deploys, payments, or irreversible data destruction without human.
 
 ## Always HUMAN_REQUIRED
 
@@ -108,13 +108,14 @@ DOES_NOT_ALLOW: (list)
 
 ## REVISE criteria
 
-- Fixable gaps in one round  
-- List exact required fixes; no vibe-only nitpicks  
+- Fixable gaps with exact required fixes; no vibe-only nitpicks  
+- Production-permission path: one REVISE then escalate if still disagreeing  
+- Explore/draft engineering: further REVISE OK until promotion  
 
 ## HUMAN_REQUIRED criteria
 
 - Always-list items, or  
-- Second disagreement after REVISE, or  
+- Second material disagreement after REVISE on a **production** decision, or  
 - Insufficient evidence for claimed permission level  
 
 ## Optional domain notes
