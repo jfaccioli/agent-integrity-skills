@@ -235,6 +235,23 @@ cp -R dual-agent-review autonomous-worker-ops fail-closed-promotion .grok/skills
 
 ---
 
+## Share / quality status
+
+**Good to share** as an opinionated integrity kit (skills + worker templates).  
+**Not claiming:** perfect coverage of every agent harness, automated skill-trigger test suite, or production SLA.
+
+Honest limits:
+
+- Skills are **instruction packs** — quality depends on the agent following them  
+- Worker templates are **minimal**; you must plug real allowlisted jobs  
+- launchd helper is a **Mac example**; Linux/Windows scheduling is documented, not fully scripted  
+- **investment-claim-court** is domain-specific — skip for pure engineering repos  
+- Project-local **renames/fields** (your readiness states, handoff artefacts) belong in your fork  
+
+If copy-install fails on first try, open an issue with OS + agent (Grok / Claude / Codex).
+
+---
+
 ## License & disclaimer
 
 MIT — see [LICENSE](LICENSE).
