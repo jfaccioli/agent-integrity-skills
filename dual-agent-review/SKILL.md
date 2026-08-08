@@ -36,12 +36,25 @@ Portable promotion/review protocol (inspired by dual-Grok / handoff systems).
 
 ## Always HUMAN_REQUIRED
 
-- API keys, secrets, `.env`, credentials  
-- Live / paper capital / shadow trading enablement  
-- Softening evaluation gates to create survivors  
+- Creating, rotating, or **using real secret values** (API keys, tokens, production credentials)  
+- Enabling production/live side effects (deploy to prod, real charges, customer-impacting automation)  
+- Softening safety/evaluation gates to force a pass  
 - Irreversible ops (force-push main, drop prod data) without explicit human  
-- Spending paid third-party APIs / subscriptions  
-- “Ready for production action” claims on money or customer-impacting agents  
+- Spending paid third-party APIs / subscriptions without prior approval  
+- Claiming “ready for production” on high blast-radius systems  
+
+**Usually not HUMAN_REQUIRED alone:** documenting env var *names*, editing `.env.example`, adding placeholder config, or low blast-radius UI/copy.
+
+## When to invoke (blast radius)
+
+| Invoke dual-agent-review | Skip (routine) |
+|--------------------------|----------------|
+| Shared generation/scoring logic, prompts that affect all users | Narrow UI polish |
+| Auth, billing, quotas, migrations | Typos, CSS, one-off copy |
+| Production deploy config, redirects/canonicals, destructive ops | Trivial tests for local-only helpers |
+| User explicitly asks for second opinion on a **high-risk** change | Every “LGTM?” on small diffs |
+
+Prefer labeling `BLAST_RADIUS: low|medium|high`. For **low**, internal QA may suffice; for **high**, prefer independent model/vendor when available.
 
 ## When invoked
 
@@ -104,13 +117,10 @@ DOES_NOT_ALLOW: (list)
 - Second disagreement after REVISE, or  
 - Insufficient evidence for claimed permission level  
 
-## Mapping to investment claims
+## Optional domain notes
 
-| Investment verdict sought | Review bar |
-|---------------------------|------------|
-| Reject / Watch / Research More | Internal QA enough |
-| Small Position Allowed | Hostile review recommended |
-| Confirmed Thesis | Prefer independent review; never same-model-only for large size |
+- **Product apps (e.g. SEO/tools):** attach behavioural contract, affected surfaces, cache compatibility, staging check — project-specific fields belong in *your* fork/variant, not only in this generic skill.  
+- **Investing:** if grading capital claims, use **investment-claim-court** separately; dual-agent-review stays for high-risk *engineering* or large-size permission, not daily tips.
 
 ## Anti-patterns
 

@@ -1,0 +1,8 @@
+[
+  {
+    "argv": ["python", "-c", "print('example job A — replace with your allowlisted command')"]
+  },
+  {
+    "argv": ["python", "-c", "print('example job B — e.g. pytest -q or scripts/inventory.py')"]
+  }
+]

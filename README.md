@@ -150,6 +150,28 @@ If you only want engineering integrity, **install the first two (or three) skill
 
 ---
 
+## Adopt for your product (e.g. SEO / SaaS apps)
+
+Codex-style guidance that matches how this pack is meant to be used:
+
+| Skill | Typical fit |
+|-------|-------------|
+| **fail-closed-promotion** | Best first adopt — map to your readiness ladders (draft → review → staging → prod) |
+| **dual-agent-review** | High-risk shared logic only (not every UI polish) |
+| **autonomous-worker-ops** | Later: long evals, backfills, regression matrices — use **bundled templates/** |
+| **investment-claim-court** | Skip unless you actually grade investments |
+
+Prefer **project-local variants** (rename states, add your artefact fields) over pasting all four unchanged into every repo.
+
+## Bundled worker templates
+
+Self-contained scripts (no private lab paths):
+
+- `templates/worker/` — `worker.py`, `watchdog.py`, `jobs.example.json`, README  
+- `templates/macos/` — example LaunchAgent + install helper  
+
+See `templates/worker/README.md`.
+
 ## Install
 
 ### Grok Build

@@ -23,14 +23,16 @@ Default answer: **No** until evidence clears a frozen bar.
 | **CONFIRM** | Second window / untouched protocol only | Confirmatory eval |
 | **ACT (human-gated)** | Production-adjacent only after ladder + human | Human explicit enable |
 
-## Mapping (investment language)
+## Mapping examples (adapt names per product)
 
-| Promotion state | Investment claim court |
-|-----------------|------------------------|
-| FORBIDDEN | Reject |
-| EXPLORE | Watch / Research More / exploratory tests |
-| CONFIRM | Confirmatory path only |
-| ACT (human) | Small Position Allowed or Confirmed Thesis **with human size rules** — never autotrade |
+| Generic state | Example product names |
+|---------------|------------------------|
+| FORBIDDEN | Blocked / Withheld / Do not ship |
+| EXPLORE | Experimental / Draft / Review required |
+| CONFIRM | Staging-ready / Monitoring / Accepted pending implement |
+| ACT (human) | Production-ready / Implemented (human gated) |
+
+Rename states to match your app (e.g. `BLOCKED → REVIEW → STAGING-READY → PRODUCTION-READY`) **without** weakening fail-closed defaults.
 
 ## Procedure
 
@@ -38,7 +40,7 @@ Default answer: **No** until evidence clears a frozen bar.
 2. **Name the action** that “act” would mean (trade, ship feature, enable agent tool, spend money).  
 3. **Freeze evaluation rules** before looking at more results (or admit peeking → stay EXPLORE).  
 4. Assign **one** permission state + evidence missing for the next state.  
-5. If action is money/keys/customers/irreversible → ACT requires **human**; recommend dual-agent-review.
+5. If action is production traffic, real secrets, payments, customers, or irreversible data → ACT requires **human**; recommend dual-agent-review for high blast radius.
 
 ## Output block
 

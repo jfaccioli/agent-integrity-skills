@@ -111,9 +111,9 @@ Document these in the project README when you adopt the pattern.
 ## Safety defaults (fail-closed)
 
 1. **No secrets** in worker env (strip `*KEY*`, `*SECRET*`, `*PASSWORD*`, tokens).  
-2. **No live trading / order placement / credential write** from worker jobs.  
+2. **No production deploy, order placement, or use of live secret values** from worker jobs.  
 3. **Allowlist only** — never `eval` free-form user chat as the job list.  
-4. **High-blast-radius changes** (schema freeze, production ship, money) are **not** auto-ACCEPT; invoke **dual-agent-review** and human.  
+4. **High-blast-radius changes** (shared business logic, production ship, destructive data ops) are **not** auto-ACCEPT; invoke **dual-agent-review** and human.  
 5. Worker may **draft** and **run tests**; promotion is a separate step.  
 6. Default job catalog should be **safe maintenance** if risky flags are off.
 
@@ -134,21 +134,24 @@ touch PAUSE_PATH
 
 6. If they want dual review: schedule **manual** or **post-batch** `/dual-agent-review` on artefacts — not every tiny job unless cheap.
 
-## Reference implementation (this monorepo only)
+## Bundled reference implementation (this repository)
 
-Crypto Research Lab example (names are local; pattern is general):
+**Use these first** — self-contained, no private lab paths:
 
-| Piece | Path / name |
-|-------|-------------|
-| Worker | `scripts/autonomous_marathon.py` |
-| Watchdog | `scripts/autonomous_watchdog.py` |
-| Hours | `CRL_MARATHON_HOURS` (e.g. 48 in LaunchAgent) |
-| State | `research_kb/rd/MARATHON_STATE.json` |
-| Pause | `research_kb/rd/AUTONOMOUS_PAUSE` |
-| Install | `scripts/install_macos_autonomous_schedule.sh` |
-| Plist template | `deploy/macos/com.evidence-research-lab.autonomous.plist` |
+| Piece | Path |
+|-------|------|
+| Worker | `templates/worker/worker.py` |
+| Watchdog | `templates/worker/watchdog.py` |
+| Example jobs | `templates/worker/jobs.example.json` |
+| How to copy/run | `templates/worker/README.md` |
+| macOS launchd plist | `templates/macos/com.example.autonomous-worker.plist` |
+| macOS install helper | `templates/macos/install_launchd.sh` |
 
-When porting: **copy the pattern**, not the crypto job catalog.
+Copy `worker.py` / `watchdog.py` into your app’s `scripts/`, set `WORKER_JOBS_FILE` to your allowlist, schedule the watchdog hourly.
+
+**Env knobs (generic):** `WORKER_HOURS`, `WORKER_ROOT`, `WORKER_STATE`, `WORKER_PAUSE`, `WORKER_LOG_DIR`, `WORKER_JOBS_FILE`, `WORKER_SCRIPT`, `WORKER_AUTO_RESTART`, `WORKER_STALE_S`.
+
+**Optional origin note:** The pattern was battle-tested in a private research lab; that lab’s paths are **not** required and are **not** shipped here.
 
 ## Checklist for a new project
 
@@ -200,7 +203,7 @@ PAUSE:
 
 | Situation | Use |
 |-----------|-----|
-| Keep EA / tests / inventory / codegen batch running 24–48h | **autonomous-worker-ops** |
-| Before merge, freeze, spend, Confirmed Thesis, production flag | **dual-agent-review** |
-| Investment claim grading | **investment-claim-court** (not the worker) |
-| May we act at all? | **fail-closed-promotion** |
+| Keep tests / inventory / evals / backfills running 24–48h | **autonomous-worker-ops** |
+| Before merge or production promotion of high-risk changes | **dual-agent-review** |
+| Readiness ladders (any product: staging → prod, draft → published) | **fail-closed-promotion** |
+| Investment claim grading only | **investment-claim-court** (optional domain skill; not the worker) |

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.example.autonomous-worker</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>REPO_ROOT_PLACEHOLDER/.venv/bin/python</string>
+    <string>REPO_ROOT_PLACEHOLDER/scripts/watchdog.py</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>REPO_ROOT_PLACEHOLDER</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>WORKER_ROOT</key>
+    <string>REPO_ROOT_PLACEHOLDER</string>
+    <key>WORKER_HOURS</key>
+    <string>48</string>
+    <key>WORKER_SCRIPT</key>
+    <string>REPO_ROOT_PLACEHOLDER/scripts/worker.py</string>
+    <key>WORKER_STATE</key>
+    <string>REPO_ROOT_PLACEHOLDER/var/worker/STATE.json</string>
+    <key>WORKER_PAUSE</key>
+    <string>REPO_ROOT_PLACEHOLDER/var/worker/PAUSE</string>
+    <key>WORKER_LOG_DIR</key>
+    <string>REPO_ROOT_PLACEHOLDER/var/worker/logs</string>
+    <key>WORKER_JOBS_FILE</key>
+    <string>REPO_ROOT_PLACEHOLDER/var/worker/jobs.json</string>
+    <key>WORKER_AUTO_RESTART</key>
+    <string>0</string>
+  </dict>
+  <key>StartInterval</key>
+  <integer>3600</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>REPO_ROOT_PLACEHOLDER/var/worker/logs/launchd.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>REPO_ROOT_PLACEHOLDER/var/worker/logs/launchd.err.log</string>
+  <key>ProcessType</key>
+  <string>Background</string>
+</dict>
+</plist>
