@@ -121,13 +121,21 @@ def main() -> int:
         action = "restart"
         log(f"worker dead/stale (alive={alive} stale={stale}) — restarting")
         start_worker()
-    elif status in (None, "", "idle", "crashed") or (status == "completed" and AUTO_RESTART):
+    elif status == "completed":
+        if AUTO_RESTART:
+            action = "start"
+            log("worker completed — WORKER_AUTO_RESTART=1 starting new window")
+            start_worker()
+        else:
+            action = "completed_window"
+            log("worker completed — not auto-restarting (set WORKER_AUTO_RESTART=1 to loop)")
+    elif status == "paused":
+        action = "paused_state"
+        log("state says paused")
+    elif status in (None, "", "idle", "crashed") or not status:
         action = "start"
         log(f"no active worker (status={status}) — starting")
         start_worker()
-    elif status == "completed" and not window_open:
-        action = "completed_window"
-        log("worker window completed — not auto-restarting (set WORKER_AUTO_RESTART=1 to loop)")
     else:
         action = f"observe_{status}"
         log(f"observe status={status} alive={alive} window_open={window_open}")
