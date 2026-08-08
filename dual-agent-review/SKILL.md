@@ -120,7 +120,7 @@ DOES_NOT_ALLOW: (list)
 
 ## Optional domain notes
 
-- **Product apps (e.g. SEO/tools):** attach behavioural contract, affected surfaces, cache compatibility, staging check — project-specific fields belong in *your* fork/variant, not only in this generic skill.  
+- **Product / SaaS apps:** add project-specific handoff fields in *your* fork (e.g. behavioural contract, affected surfaces, cache/compat notes, staging check). Keep this generic skill free of one product’s schema.  
 - **Investing:** if grading capital claims, use **investment-claim-court** separately; dual-agent-review stays for high-risk *engineering* or large-size permission, not daily tips.
 
 ## Anti-patterns

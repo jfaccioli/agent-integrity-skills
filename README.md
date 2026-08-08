@@ -150,9 +150,9 @@ If you only want engineering integrity, **install the first two (or three) skill
 
 ---
 
-## Adopt for your product (e.g. SEO / SaaS apps)
+## Adopt for your product
 
-Codex-style guidance that matches how this pack is meant to be used:
+How this pack is meant to be used in any app (not tied to one product):
 
 | Skill | Typical fit |
 |-------|-------------|
@@ -161,7 +161,7 @@ Codex-style guidance that matches how this pack is meant to be used:
 | **autonomous-worker-ops** | Later: long evals, backfills, regression matrices — use **bundled templates/** |
 | **investment-claim-court** | Skip unless you actually grade investments |
 
-Prefer **project-local variants** (rename states, add your artefact fields) over pasting all four unchanged into every repo.
+Prefer **project-local variants** (rename states, add your own handoff fields) over pasting all four unchanged into every repo.
 
 ## Bundled worker templates
 
