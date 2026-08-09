@@ -1,265 +1,266 @@
 # Agent Integrity Skills
 
-Portable **SKILL.md** packs for **Grok Build**, **Claude Code**, **Codex**, **Cursor**, and similar agents.
+Keep AI-agent work moving. Review its output separately. Keep production human-gated.
 
-**Core idea:** keep agents useful for long stretches of work **without** letting them silently approve high-stakes mistakes.
+Three portable skills for **Claude Code**, **Codex**, **Grok Build**, **Cursor**, and similar coding agents.
 
-Two skills form the **general toolkit** (any domain). Two more are **optional** (promotion language + investing).
+| When this goes wrong | Add this skill | What changes |
+| --- | --- | --- |
+| Agent work stops when a session or process dies | [`autonomous-worker-ops`](autonomous-worker-ops/SKILL.md) | Bounded, allowlisted jobs can recover and continue |
+| The agent approves its own work | [`dual-agent-review`](dual-agent-review/SKILL.md) | A separate review returns `ACCEPT`, `REVISE`, or `HUMAN_REQUIRED` |
+| Green tests are mistaken for permission to ship | [`fail-closed-promotion`](fail-closed-promotion/SKILL.md) | Evidence must clear explicit gates before action |
 
----
+Use all three for substantial product work, or adopt only the control your workflow is missing.
 
-## The general toolkit (use anywhere)
+## Ask Your Agent First
 
-### 1. `dual-agent-review` — quality & permission
-
-| | |
-|--|--|
-| **Question it answers** | “Is this plan/diff/claim safe enough to **proceed**?” |
-| **Works for** | Code, product design, ops runbooks, research, hiring scorecards, security changes — **not only investing** |
-| **Output** | Exactly one of: **ACCEPT** · **REVISE** · **HUMAN_REQUIRED** |
-| **Key rules** | Hostile review; at most **one** REVISE round; **HUMAN_REQUIRED cannot self-clear**; same-model QA ≠ full independence for freezes/money/production |
-| **Call** | `/dual-agent-review` (Grok) or “use dual-agent-review on this artefact” |
-
-**Why it exists:** One agent writing *and* rubber-stamping itself is how bad merges, bad deploys, and fake “we’re ready” claims happen.
-
----
-
-### 2. `autonomous-worker-ops` — long unattended work
-
-| | |
-|--|--|
-| **Question it answers** | “How do we keep **allowlisted** work running for **H hours** (or multi-day windows) without me babysitting chat?” |
-| **Works for** | Any project with a job list: tests, refactors, inventory, codegen batches, doc rebuilds, eval suites |
-| **Pattern** | **Worker** (time budget) + **Watchdog** (restart if dead) + **heartbeat/status** + **pause file** + **allowlist** + strip secrets |
-| **Hours** | Human-set (e.g. 8 / 24 / 48). Multi-day is fine **if** the machine stays **awake**, and the watchdog can restart mid-window |
-| **Call** | `/autonomous-worker-ops` or “design a 48h worker+watchdog for these jobs” |
-
-**Why it exists:** Chat sessions die. Laptops sleep. Agents crash. A **worker + watchdog** is ops infrastructure, not “hope the terminal stays open.”
-
-**Limits (accurate):**  
-- Skill documents the pattern; **you** still need scripts + launchd/cron/systemd in *your* repo.  
-- Jobs must be **allowlisted** — not open-ended “keep coding until perfect.”  
-- **Not** auto-deploy, auto-trade, or unbounded internet actions.  
-- **Host sleep** still kills the run if the laptop suspends — worker/watchdog cannot fix that alone.
-
-**Stay awake (optional host tips):**
-
-| OS | Prefer first | Optional |
-|----|----------------|----------|
-| **macOS** | Built-in `caffeinate -dims` (can wrap the worker process) | **[Amphetamine](https://apps.apple.com/app/amphetamine/id937984704)** (Mac App Store) — simple timed “don’t sleep” sessions; not required |
-| **Windows** | Power settings: sleep **Never** while plugged in for the window; or `powercfg` standby timeout changes (restore after) | Third-party keep-awake tools (e.g. Caffeine / Don't Sleep) — optional, no single standard |
-| **Most reliable** | Always-on mini-PC / VPS with suspend disabled | — |
-
----
-
-## How they compose (recommended)
+Ask your AI coding agent to review these skills against your project's workflows, risks, and existing controls. It should recommend which skills are useful, what needs project-specific tailoring, and what should remain unchanged before installing anything.
 
 ```text
-                    ┌─────────────────────────────┐
-  OS schedule ─────►│ Watchdog (every ~1 hour)    │
-                    │ restart worker if dead/stale │
-                    └──────────────┬──────────────┘
-                                   ▼
-                    ┌─────────────────────────────┐
-                    │ Worker for H hours           │
-                    │ allowlisted jobs only        │
-                    │ heartbeat + pause file       │
-                    └──────────────┬──────────────┘
-                                   │ produces PRs, fixes, reports
-                                   ▼
-                    ┌─────────────────────────────┐
-                    │ dual-agent-review            │
-                    │ before merge / ship / spend  │
-                    └──────────────┬──────────────┘
-                                   ▼
-                              Human if HUMAN_REQUIRED
+Review this repository against:
+https://github.com/jfaccioli/agent-integrity-skills
+
+Recommend:
+- which skills are relevant
+- where they would improve the current workflow
+- what project-specific tailoring they need
+- what existing controls must remain unchanged
+- which actions must stay human-gated
+
+Do not install or modify anything yet.
 ```
 
-| Concern | Skill |
-|---------|--------|
-| Keep work running overnight / multi-day | **autonomous-worker-ops** |
-| Decide if results may be promoted | **dual-agent-review** |
-| High-level “may we act at all?” ladder | **fail-closed-promotion** (optional) |
+Project-local variants are encouraged. Rename states and add handoff fields to match your product, but do not weaken fail-closed defaults or existing safety controls.
 
-**Do not merge** dual-review and worker-ops into one skill: different cadence, different failure modes. **Do use both** on serious projects.
+## The Three Controls
 
----
+### 1. Keep Work Moving
 
-## Concrete examples
+`autonomous-worker-ops` helps run allowlisted jobs inside a human-defined time window.
 
-### Example A — App is broken; agents keep grinding safely
+It combines a worker, heartbeat, status file, pause control, and watchdog recovery. It is useful for test runs, targeted refactors, inventory jobs, code generation, documentation rebuilds, and evaluation suites.
 
-**Goal:** Flaky CI / failing e2e; you want progress for **24–48 hours** without sitting in chat.
+It does **not** authorize unlimited coding, production deployment, secret access, or unrestricted internet actions. The skill documents the pattern; your project still needs worker scripts, an OS scheduler, and a machine that remains available.
 
-1. **autonomous-worker-ops**  
-   - Allowlist: `test`, `lint`, targeted fix scripts, “open PR with failing log + proposed patch”  
-   - Hours: `48`  
-   - Forbidden: production deploy, secret files, force-push main  
-2. Worker loop: reproduce → minimal fix → re-run tests → write status  
-3. When a candidate fix looks ready → **dual-agent-review** on the PR/diff  
-4. **ACCEPT** → you merge; **REVISE** → one more loop; **HUMAN_REQUIRED** → you decide (e.g. prod data access)
+### 2. Review Work Separately
 
-**Accurate?** Yes — *if* jobs are bounded.  
-**Not accurate:** “Agents never stop until the universe is fixed” with no time budget or allowlist. Prefer: *until the window ends or the suite is green, whichever first*, then review.
+`dual-agent-review` prevents the producer from silently approving its own result.
 
----
+The reviewer checks the actual plan, diff, claim, design, tests, and evidence, then returns exactly one decision:
 
-### Example B — Multi-day feature implementation
+- `ACCEPT`
+- `REVISE`
+- `HUMAN_REQUIRED`
 
-1. Human freezes scope (“v1 only: endpoints X, no payments”).  
-2. Worker runs for several days of wall-clock time in **renewed H-hour windows** (or one long window if the host stays up): implement → test → document.  
-3. End of each major chunk: dual-agent-review before merge.  
-4. Ship to production only after human + ACCEPT (and your normal CI).
+The reviewer can be another model. A same-model hostile review is still useful internal QA, but it must be labeled `internal_qa_not_independent` and cannot independently authorize high-risk production, money, or irreversible actions.
 
----
+### 3. Control Permission
 
-### Example C — Research / eval suite overnight
+`fail-closed-promotion` starts from **do not act**.
 
-1. Allowlist: run eval jobs, write JSON reports, no network write except approved APIs.  
-2. Watchdog restarts if the process dies.  
-3. Morning: dual-agent-review on “are these results publishable / decision-grade?”
+Evidence must move the work through:
 
----
+```text
+FORBIDDEN -> EXPLORE -> CONFIRM -> ACT (human-gated)
+```
 
-### Example D — Dual review alone (no worker)
+Use it for ship readiness, agent permissions, publication claims, or any decision where passing tests is necessary but not sufficient authority to act.
 
-You have a one-shot design or security-sensitive PR.  
-Skip the worker. Run **dual-agent-review** only. Still valuable on any subject.
+## How the Three Controls Work
 
----
+```text
+Human defines scope, time, allowlist, and forbidden actions
+                              |
+                              v
+                 autonomous-worker-ops
+                  keeps bounded work moving
+                              |
+                              v
+                    artefacts and evidence
+                              |
+                              v
+                    dual-agent-review
+             ACCEPT | REVISE | HUMAN_REQUIRED
+                              |
+                              v
+                  fail-closed-promotion
+          FORBIDDEN -> EXPLORE -> CONFIRM -> ACT
+                              |
+                              v
+                 human approval where required
+```
 
-## Optional skills
+The controls compose, but they remain separate:
 
-### 3. `fail-closed-promotion` — “May we act?”
+- A healthy worker does not prove its output is correct.
+- An accepted review does not automatically authorize production.
+- A permission gate does not keep a crashed worker running.
 
-Short ladder: **FORBIDDEN → EXPLORE → CONFIRM → ACT (human-gated)**.  
-Use for ship readiness, agent tool permission, or any claim that wants production side effects.  
-Works **outside** investing (product flags, internal agents, etc.).
+## Example: A Failing Application
 
-### 4. `investment-claim-court` — domain pack (not required for coding)
+You want an agent to work on flaky CI or failing end-to-end tests for 24 hours without supervising every step.
 
-Grades **investment claims** (stocks, ETFs, crypto, macro) with:
+1. Freeze the scope and allowlist tests, linting, targeted fixes, and status reporting.
+2. Use `autonomous-worker-ops` to run until the suite is green or the time window ends.
+3. Run `dual-agent-review` on the candidate diff and its test evidence.
+4. Use `fail-closed-promotion` to decide whether the result remains exploratory, may move to staging, or needs a human decision.
 
-`Reject | Watch | Research More | Small Position Allowed | Confirmed Thesis`
+Production deployment, secret access, destructive operations, and force-pushing the main branch remain forbidden unless a human explicitly authorizes them.
 
-- **Not** a tip engine (“buy ETH”).  
-- **Not** required to use dual-agent or worker-ops.  
-- Include it only if you care about personal/process investing integrity.
+## Other Useful Patterns
 
-If you only want engineering integrity, **install the first two (or three) skills** and ignore this one.
+### Multi-day feature implementation
 
----
+Freeze the feature scope first. Run implementation and tests in bounded, renewable windows. Review major chunks before merge. Keep production behind normal CI and explicit human approval.
 
-## Adopt for your product
+### Overnight research or evaluation
 
-How this pack is meant to be used in any app (not tied to one product):
+Allowlist evaluation jobs and report generation. Restrict network writes to approved APIs. Review whether the results are decision-grade or publishable the next morning.
 
-| Skill | Typical fit |
-|-------|-------------|
-| **fail-closed-promotion** | Best first adopt — map to your readiness ladders (draft → review → staging → prod) |
-| **dual-agent-review** | High-risk shared logic only (not every UI polish) |
-| **autonomous-worker-ops** | Later: long evals, backfills, regression matrices — use **bundled templates/** |
-| **investment-claim-court** | Skip unless you actually grade investments |
+### Review without a worker
 
-Prefer **project-local variants** (rename states, add your own handoff fields) over pasting all four unchanged into every repo.
+For a one-shot architecture plan, security-sensitive change, or high-risk diff, use `dual-agent-review` by itself.
 
-## Bundled worker templates
+## Quick Start
 
-Self-contained scripts (no private lab paths):
-
-- `templates/worker/` — `worker.py`, `watchdog.py`, `jobs.example.json`, README  
-- `templates/macos/` — example LaunchAgent + install helper  
-
-See `templates/worker/README.md`.
-
-## Install
-
-### Grok Build
+Clone the repository:
 
 ```bash
 git clone https://github.com/jfaccioli/agent-integrity-skills.git
 cd agent-integrity-skills
-
-# Core (recommended)
-for s in dual-agent-review autonomous-worker-ops fail-closed-promotion; do
-  mkdir -p ~/.grok/skills/$s && cp $s/SKILL.md ~/.grok/skills/$s/SKILL.md
-done
-
-# Optional investing
-mkdir -p ~/.grok/skills/investment-claim-court
-cp investment-claim-court/SKILL.md ~/.grok/skills/investment-claim-court/SKILL.md
 ```
 
-Call: `/dual-agent-review`, `/autonomous-worker-ops`, `/fail-closed-promotion`, `/investment-claim-court`
+### Grok Build
+
+```bash
+for s in dual-agent-review autonomous-worker-ops fail-closed-promotion; do
+  mkdir -p ~/.grok/skills/$s
+  cp $s/SKILL.md ~/.grok/skills/$s/SKILL.md
+done
+```
+
+Call:
+
+```text
+/dual-agent-review
+/autonomous-worker-ops
+/fail-closed-promotion
+```
 
 ### Claude Code
 
 ```bash
-git clone https://github.com/jfaccioli/agent-integrity-skills.git
 mkdir -p ~/.claude/skills/evidence
-cp -R agent-integrity-skills/dual-agent-review \
-      agent-integrity-skills/autonomous-worker-ops \
-      agent-integrity-skills/fail-closed-promotion \
+cp -R dual-agent-review \
+      autonomous-worker-ops \
+      fail-closed-promotion \
       ~/.claude/skills/evidence/
-# optional:
-cp -R agent-integrity-skills/investment-claim-court ~/.claude/skills/evidence/
 ```
 
-### Codex / others
+### Codex, Cursor, and Other Agents
+
+Ask the agent to read and apply only the relevant skill files:
 
 ```text
-Read and obey only:
-.../dual-agent-review/SKILL.md
+Read and apply:
+- .../autonomous-worker-ops/SKILL.md
+- .../dual-agent-review/SKILL.md
+- .../fail-closed-promotion/SKILL.md
+
+First assess which skills fit this project and what must be tailored.
+Do not install or modify anything until the assessment is complete.
 ```
 
-Or copy into that tool’s skills directory.
+For project-local installation, copy the selected skill directories into the skills location used by your agent and repository. Preserve each directory's `SKILL.md` filename.
 
-### Project-local
+## Tailor Them to Your Product
 
-```bash
-mkdir -p .grok/skills   # and/or .claude/skills
-cp -R dual-agent-review autonomous-worker-ops fail-closed-promotion .grok/skills/
+These are portable contracts, not a demand to impose identical terminology on every project.
+
+| Skill | Typical tailoring |
+| --- | --- |
+| `autonomous-worker-ops` | Job allowlist, time budget, status paths, pause mechanism, scheduler, forbidden actions |
+| `dual-agent-review` | Handoff fields, affected surfaces, required tests, blast-radius rules, review independence |
+| `fail-closed-promotion` | Readiness-state names, evidence requirements, production and human gates |
+
+Examples of valid state renaming include:
+
+```text
+FORBIDDEN -> EXPLORE -> CONFIRM -> ACT
+BLOCKED   -> REVIEW  -> STAGING -> PRODUCTION (human-gated)
 ```
 
----
+Changing names is fine. Removing evidence requirements or allowing an agent to self-clear a human gate is not.
 
-## What this is not
+## Bundled Worker Templates
 
-| Not | Reality |
-|-----|---------|
-| Infinite unconstrained agents | Time budget + allowlist |
-| Auto production deploy | Human + dual review on promote |
-| Live trading / broker bots | Explicitly out of scope |
-| Same-model “LGTM” = independent audit | Labeled internal QA ≠ freeze authority |
-| Stock tips | investment-claim-court refuses tips |
+The repository includes a self-contained reference implementation:
 
----
+- [`templates/worker/worker.py`](templates/worker/worker.py) - bounded worker loop
+- [`templates/worker/watchdog.py`](templates/worker/watchdog.py) - stale-process recovery
+- [`templates/worker/jobs.example.json`](templates/worker/jobs.example.json) - example allowlist
+- [`templates/worker/README.md`](templates/worker/README.md) - setup and operation
+- [`templates/macos/com.example.autonomous-worker.plist`](templates/macos/com.example.autonomous-worker.plist) - example macOS LaunchAgent
+- [`templates/macos/install_launchd.sh`](templates/macos/install_launchd.sh) - example installer
 
-## Share / quality status
+Copy the templates into your project, define the allowlisted jobs, and schedule the watchdog with launchd, cron, systemd, or an equivalent external scheduler.
 
-**Good to share** as an opinionated integrity kit (skills + worker templates).  
-**Not claiming:** perfect coverage of every agent harness, automated skill-trigger test suite, or production SLA.
+## Host Availability
+
+A worker and watchdog cannot recover while the host is fully asleep.
+
+| Platform | Prefer first | Optional |
+| --- | --- | --- |
+| macOS | Built-in `caffeinate -dims` or suitable power settings | [Amphetamine](https://apps.apple.com/app/amphetamine/id937984704) for timed keep-awake sessions |
+| Windows | Power settings or `powercfg`; restore temporary changes afterward | Third-party keep-awake tools where appropriate |
+| Linux | `systemd-inhibit`, power settings, cron, or systemd timers | Desktop caffeine utilities |
+| Most reliable | Always-on mini-PC or VPS with suspend disabled | - |
+
+Closing a laptop lid may still suspend it. Confirm host behavior before relying on a multi-hour window.
+
+## Boundaries
+
+| This toolkit is not | What it actually provides |
+| --- | --- |
+| An infinite autonomous agent | A human-set time budget and explicit job allowlist |
+| Automatic production deployment | Review and promotion controls with human gates |
+| Proof that an agent's output is correct | A reproducible, evidence-seeking review protocol |
+| Independent review when one model reviews itself | Internal QA labeled as non-independent |
+| Secret management | Explicit restrictions on live credentials and sensitive actions |
+| A production service or SLA | Instruction packs and minimal worker templates to adapt |
+
+`HUMAN_REQUIRED` cannot be cleared by the producer or a same-model reviewer. Production, live secrets, payments, and irreversible actions remain human decisions.
+
+## Optional Domain Pack
+
+[`investment-claim-court`](investment-claim-court/SKILL.md) is a separate skill for grading investment claims:
+
+```text
+Reject | Watch | Research More | Small Position Allowed | Confirmed Thesis
+```
+
+It is not a tip engine, trading bot, or requirement for engineering projects. Skip it unless you specifically need an investment-claim process.
+
+## Quality Status
+
+Good to share as an opinionated integrity toolkit with worker templates.
 
 Honest limits:
 
-- Skills are **instruction packs** — quality depends on the agent following them  
-- Worker templates are **minimal**; you must plug real allowlisted jobs  
-- launchd helper is a **Mac example**; Linux/Windows scheduling is documented, not fully scripted  
-- **investment-claim-court** is domain-specific — skip for pure engineering repos  
-- Project-local **renames/fields** (your readiness states, handoff artefacts) belong in your fork  
+- Skills are instruction packs; results depend on the agent following them.
+- Worker templates are minimal and require a real project-specific allowlist.
+- The launchd helper is a macOS example; Linux and Windows scheduling are documented, not fully scripted.
+- Agent harnesses differ, so installation paths and invocation behavior may require adjustment.
+- Project-specific readiness states, ownership rules, tests, and handoff fields belong in your local adaptation.
 
-If copy-install fails on first try, open an issue with OS + agent (Grok / Claude / Codex).
+If installation fails, open an issue with your operating system, agent, installation path, and the command or error involved.
 
----
+## License and Disclaimer
 
-## License & disclaimer
+MIT - see [LICENSE](LICENSE).
 
-MIT — see [LICENSE](LICENSE).
-
-Process templates only. **Not financial advice.** No warranty. You own how agents run on your machines.
-
----
+Process templates only. Not financial advice. No warranty. You remain responsible for how agents run and what actions they are permitted to take.
 
 ## Origin
 
-Patterns extracted from real multi-hour research/ops loops and dual-review discipline (including a private lab that refused live trading when evidence did not clear hard gates). Published so the **integrity mechanics** travel across tools — not so anyone copy-pastes a trading strategy.
+These patterns were extracted from multi-hour research and operations workflows and dual-review discipline. They are published so the integrity mechanics can travel across tools and projects, not so high-risk decisions become automatic.
