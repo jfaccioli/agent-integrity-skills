@@ -69,6 +69,11 @@ QA and Build should be **separate sessions or products** when available. A
 same-model split is still useful, but label it `internal_qa_not_independent`
 and do not let it authorize production.
 
+**Runtimes (examples, not requirements):** Grok Bot is a valid QA runtime
+when it can drive a staging browser. Grok Build, Claude Code, Codex, or
+Cursor can be the Build runtime. The contract is the roles and git handoff,
+not the vendor.
+
 ## Required pieces
 
 Copy [`templates/staging-qa-loop/`](../templates/staging-qa-loop/) into the
@@ -99,15 +104,41 @@ cycle N
         -> commits/pushes only cycle artefacts
   Build -> git pull
         -> verify / triage / reject false positives
-        -> implement one coherent staging batch
+        -> implement one coherent staging batch (see Deploy batching)
         -> local tests for that batch
-        -> checkpoint commit + staging deploy
-        -> writes cycles/NNN/build.md
+        -> ONE staging deploy for that batch
+        -> writes cycles/NNN/build.md (Ship now / Park / Bot retest list)
         -> STATE -> awaiting QA for N+1
 repeat until stop criteria or STATE.stop
 ```
 
 Communication is **git on the working branch**, not chat with the human.
+
+## Deploy batching
+
+Staging deploys are expensive for the QA role. Batch so **one ship gets one
+deep pass**.
+
+1. **Batch related fixes into ONE staging deploy.** Compatible root-cause
+   fixes that QA can retest together ship together. Do not drip one-line
+   deploys through the loop.
+2. **One Bot deep-pass per ship**, plus light regression of previously closed
+   P0/P1 IDs. Do not request a full-area deep pass on every tiny patch.
+3. **Do not rotate areas on an unchanged hosting SHA.** `STATE.next_area`
+   moves only after this ship is on staging and QA has evidence against that
+   SHA. If hosting still serves the previous build, stay on the same area;
+   wait or redeploy. Do not ask QA to deep-test a new area on old bits.
+4. **Single-shot deploys only for true P0 / trust blockers** — cannot continue
+   a core journey, data-loss, security, or a lie that would ship as success.
+   Everything else waits for the next batch.
+5. **`build.md` must list:**
+   - **Ship now** — what is in this deploy, git SHA, tests run
+   - **Park** — accepted findings deferred, with why
+   - **Bot retest list** — exact journeys/IDs QA must cover next (deep on the
+     ship, light regressions)
+
+A parked item is not a silent drop. It stays in `STATE` / later `build.md`
+until shipped or explicitly `wontfix`.
 
 ## Hard rules
 
@@ -121,8 +152,9 @@ Communication is **git on the working branch**, not chat with the human.
    chat.
 5. **False positives are rejected.** Build independently verifies P0/P1 in
    code. Duplicates reuse the previous issue ID.
-6. **One coherent batch per cycle.** Prefer one root-cause change over five
-   patches. Cap **3** unsuccessful repairs per issue, then `blocked`.
+6. **One coherent batch and one staging deploy per cycle** (see Deploy
+   batching). Prefer one root-cause change over five patches. Cap **3**
+   unsuccessful repairs per issue, then `blocked`.
 7. **Tests that cover the batch are mandatory.** Do not claim done on skipped
    tests.
 8. **High-blast Build batches** invoke **dual-agent-review**. QA evidence is
@@ -158,6 +190,10 @@ STAGING_QA:
   findings: P0= P1= P2= P3=
   rejected_false_positives: ...
   shipped_this_cycle: ...
+  hosting_sha: ...
+  ship_now: ...
+  park: ...
+  bot_retest_list: ...
   next_area: ...
   stop: true|false
 COMPOSE:
@@ -193,6 +229,8 @@ Escalate (set `STATE.stop`, notify the human) on:
 - QA token opening engineering PRs (or the human token used as the QA bot)
 - Product-specific scoring/ownership/billing rules copied into this skill
 - Infinite polish cycles after stop criteria are met
+- Rotating `next_area` while staging still serves the previous SHA
+- One finding → one deploy → one full-area retest, unless it is a P0 / trust blocker
 
 ## Templates
 

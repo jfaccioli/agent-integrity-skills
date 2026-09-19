@@ -114,12 +114,19 @@ new ID for the same root cause.
 6. Local validation of touched tests is mandatory. Broader suites when the
    batch is shared/high-blast.
 7. **Commit** only when the batch is coherent and tests for it pass.
-8. **Staging deploy** only after that commit. One deploy per cycle unless a
-   P0 hotfix is required.
+8. **Staging deploy** only after that commit. Follow **Deploy batching** in
+   `staging-qa-loop/SKILL.md`: related fixes in **one** deploy; one QA
+   deep-pass per ship plus light regressions; do not rotate areas on an
+   unchanged hosting SHA; single-shot deploys only for true P0 / trust
+   blockers.
 9. Cap **3** unsuccessful repair attempts per issue, then record it
    `blocked` with cause.
 10. High-blast batches invoke **dual-agent-review**. Same-model review is
     `internal_qa_not_independent` and cannot authorize production.
+
+`cycles/NNN/build.md` must list **Ship now**, **Park**, and **Bot retest
+list**. Do not move `STATE.next_area` until the ship SHA is what staging
+hosts.
 
 ## Area sequence (replace with yours)
 
