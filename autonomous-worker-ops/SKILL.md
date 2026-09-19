@@ -204,6 +204,7 @@ PAUSE:
 | Situation | Use |
 |-----------|-----|
 | Keep tests / inventory / evals / backfills running 24–48h | **autonomous-worker-ops** |
+| Independent staging QA with git-handoff evidence | **staging-qa-loop** |
 | Before merge or production promotion of high-risk changes | **dual-agent-review** |
 | Readiness ladders (any product: staging → prod, draft → published) | **fail-closed-promotion** |
 | Investment claim grading only | **investment-claim-court** (optional domain skill; not the worker) |

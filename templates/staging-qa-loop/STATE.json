@@ -1,0 +1,9 @@
+{
+  "cycle": "000",
+  "phase": "idle",
+  "branch": "your-working-branch",
+  "next_area": "auth",
+  "status": "idle",
+  "stop": false,
+  "notes": "Copy into the project handoff directory. Replace branch, next_area, and tester notes. Staging only. STATE.json is the only live pointer."
+}
