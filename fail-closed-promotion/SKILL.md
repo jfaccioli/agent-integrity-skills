@@ -40,7 +40,7 @@ Rename states to match your app (e.g. `BLOCKED → REVIEW → STAGING-READY → 
 2. **Name the action** that “act” would mean (trade, ship feature, enable agent tool, spend money).  
 3. **Freeze evaluation rules** before looking at more results (or admit peeking → stay EXPLORE).  
 4. Assign **one** permission state + evidence missing for the next state.  
-5. If action is production traffic, real secrets, payments, customers, or irreversible data → ACT requires **human**; recommend dual-agent-review for high blast radius.
+5. If action is production traffic, real secrets, payments, customers, or irreversible data → ACT requires **human**; recommend dual-agent-review for high blast radius. A green **staging-qa-loop** is evidence for **CONFIRM** at most, never ACT.
 
 ## Output block
 
