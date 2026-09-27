@@ -11,6 +11,10 @@ Four portable skills for **Claude Code**, **Codex**, **Grok Build**, **Cursor**,
 | Green tests are mistaken for permission to ship | [`fail-closed-promotion`](fail-closed-promotion/SKILL.md) | Evidence must clear explicit gates before action |
 | Staging looks green while journeys still lie | [`staging-qa-loop`](staging-qa-loop/SKILL.md) | Independent QA evidence and staging-only batches, on git, not chat |
 
+## Used in production
+
+Built and used daily on SEOcluster.ai (https://seocluster.ai), a live SEO SaaS with paying users. One AI coding agent (Grok Build) implements and deploys to staging. A separate, independent AI QA agent tests every deploy in a browser with real tester accounts, writes cycle evidence (report and screenshots) to git, and returns ACCEPT or blocks until defects are fixed. Production stays human-gated. The loop has run 240+ QA cycles. Examples of defects it caught on staging before users saw them: free accounts being logged out mid-audit, a site audit showing a different website's data after switching sites, and upgrade copy that did not match what the account could actually do.
+
 Use all four for substantial product work, or adopt only the control your workflow is missing.
 
 ## Ask Your Agent First
@@ -261,16 +265,6 @@ Closing a laptop lid may still suspend it. Confirm host behavior before relying 
 
 `HUMAN_REQUIRED` cannot be cleared by the producer or a same-model reviewer. Production, live secrets, payments, and irreversible actions remain human decisions.
 
-## Optional Domain Pack
-
-[`investment-claim-court`](investment-claim-court/SKILL.md) is a separate skill for grading investment claims:
-
-```text
-Reject | Watch | Research More | Small Position Allowed | Confirmed Thesis
-```
-
-It is not a tip engine, trading bot, or requirement for engineering projects. Skip it unless you specifically need an investment-claim process.
-
 ## Quality Status
 
 Good to share as an opinionated integrity toolkit with worker templates.
@@ -290,8 +284,10 @@ If installation fails, open an issue with your operating system, agent, installa
 
 MIT - see [LICENSE](LICENSE).
 
-Process templates only. Not financial advice. No warranty. You remain responsible for how agents run and what actions they are permitted to take.
+Process templates only. No warranty. You remain responsible for how agents run and what actions they are permitted to take.
 
 ## Origin
 
-These patterns were extracted from multi-hour research and operations workflows, dual-review discipline, and independent staging QA loops. They are published so the integrity mechanics can travel across tools and projects, not so high-risk decisions become automatic.
+These patterns come from building and operating SEOcluster.ai and related research and operations workflows. They are published so the integrity mechanics can travel across tools and projects, not so high-risk decisions become automatic.
+
+Built by Jimmy Faccioli · [LinkedIn](https://www.linkedin.com/in/jimmy-faccioli-566190209/) · [GitHub](https://github.com/jfaccioli)
