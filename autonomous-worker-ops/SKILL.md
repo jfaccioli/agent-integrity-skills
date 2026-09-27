@@ -15,7 +15,7 @@ Portable pattern for **time-boxed unattended work**.
 
 **Job of this skill:** Help design, configure, or operate a **worker + watchdog** loop so allowlisted tasks keep running for **H hours** without the human sitting in chat.
 
-**Not this skill:** Dual-model review, investment tips, live trading, secret management, or “keep going forever with no budget.”
+**Not this skill:** Dual-model review, live trading, secret management, or “keep going forever with no budget.”
 
 ## One-line split (do not merge with dual-agent-review)
 
@@ -207,4 +207,3 @@ PAUSE:
 | Independent staging QA with git-handoff evidence | **staging-qa-loop** |
 | Before merge or production promotion of high-risk changes | **dual-agent-review** |
 | Readiness ladders (any product: staging → prod, draft → published) | **fail-closed-promotion** |
-| Investment claim grading only | **investment-claim-court** (optional domain skill; not the worker) |

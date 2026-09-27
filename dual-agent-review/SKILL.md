@@ -121,8 +121,7 @@ DOES_NOT_ALLOW: (list)
 ## Optional domain notes
 
 - **Product / SaaS apps:** add project-specific handoff fields in *your* fork (e.g. behavioural contract, affected surfaces, cache/compat notes, staging check). Keep this generic skill free of one product’s schema.  
-- **Recurring staging honesty:** use **staging-qa-loop** for the QA ↔ Build evidence cycle. This skill stays for artefact review; a green staging pass is not ACCEPT of the diff and is not production ACT.  
-- **Investing:** if grading capital claims, use **investment-claim-court** separately; dual-agent-review stays for high-risk *engineering* or large-size permission, not daily tips.
+- **Recurring staging honesty:** use **staging-qa-loop** for the QA ↔ Build evidence cycle. This skill stays for artefact review; a green staging pass is not ACCEPT of the diff and is not production ACT. Dual-agent-review stays for high-risk engineering or large-size permission, not daily tips.
 
 ## Anti-patterns
 
