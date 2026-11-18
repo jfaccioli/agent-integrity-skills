@@ -1,6 +1,10 @@
 # Agent Integrity Skills
 
+**Don't let the same AI that wrote the work grade its own homework.**
+
 Keep AI-agent work moving. Review its output separately. Keep staging honest. Keep production human-gated.
+
+![Agent Integrity Skills Workflow](docs/agent-integrity-skills-hero.webp)
 
 Four portable skills for **Claude Code**, **Codex**, **Grok Build**, **Cursor**, and similar coding agents.
 
@@ -11,9 +15,12 @@ Four portable skills for **Claude Code**, **Codex**, **Grok Build**, **Cursor**,
 | Green tests are mistaken for permission to ship | [`fail-closed-promotion`](fail-closed-promotion/SKILL.md) | Evidence must clear explicit gates before action |
 | Staging looks green while journeys still lie | [`staging-qa-loop`](staging-qa-loop/SKILL.md) | Independent QA evidence and staging-only batches, on git, not chat |
 
+> **Looking for AI Marketing, Technical SEO & Fact-Checked Reporting Skills?**
+> See **[MarTech Fieldbook: AI SEO, Content & Data Ops Kit](#related-martech-fieldbook-ai-seo-content--data-ops-kit)** below (available on [Agensi](https://www.agensi.io/creators/jimmy-faccioli) · case study on [JimmyTech](https://jimmytech.com.au/work/martech-fieldbook/)).
+
 ## Used in production
 
-Built and used daily on SEOcluster.ai (https://seocluster.ai), a live SEO SaaS with paying users. One AI coding agent (Grok Build) implements and deploys to staging. A separate, independent AI QA agent tests every deploy in a browser with real tester accounts, writes cycle evidence (report and screenshots) to git, and returns ACCEPT or blocks until defects are fixed. Production stays human-gated. The loop has run 240+ QA cycles. Examples of defects it caught on staging before users saw them: free accounts being logged out mid-audit, a site audit showing a different website's data after switching sites, and upgrade copy that did not match what the account could actually do.
+Built and used daily on SEOcluster.ai (https://seocluster.ai), a live SEO SaaS with paying users. One AI coding agent (Grok Build / Claude Code) implements and deploys to staging. A separate, independent AI QA agent tests every deploy in a browser with real tester accounts, writes cycle evidence (report and screenshots) to git, and returns ACCEPT or blocks until defects are fixed. Production stays human-gated. The loop has run 370+ QA cycles. Examples of defects it caught on staging before users saw them: free accounts being logged out mid-audit, a site audit showing a different website's data after switching sites, and upgrade copy that did not match what the account could actually do.
 
 Use all four for substantial product work, or adopt only the control your workflow is missing.
 
@@ -173,13 +180,15 @@ Copy `templates/staging-qa-loop/` into the **project** (default `.handoffs/qa-lo
 
 ### Claude Code
 
+Copy directly into `~/.claude/skills/` (each skill must sit one folder below `~/.claude/skills/` so Claude Code discovers its `SKILL.md`):
+
 ```bash
-mkdir -p ~/.claude/skills/evidence
+mkdir -p ~/.claude/skills
 cp -R dual-agent-review \
       autonomous-worker-ops \
       fail-closed-promotion \
       staging-qa-loop \
-      ~/.claude/skills/evidence/
+      ~/.claude/skills/
 ```
 
 ### Codex, Cursor, and Other Agents
@@ -290,4 +299,18 @@ Process templates only. No warranty. You remain responsible for how agents run a
 
 These patterns come from building and operating SEOcluster.ai and related research and operations workflows. They are published so the integrity mechanics can travel across tools and projects, not so high-risk decisions become automatic.
 
-Built by Jimmy Faccioli · [LinkedIn](https://www.linkedin.com/in/jimmy-faccioli-566190209/) · [GitHub](https://github.com/jfaccioli)
+---
+
+## Related: MarTech Fieldbook (AI SEO, Content & Data Ops Kit)
+
+If you use **Claude Code**, **Cursor**, or **Codex** for technical SEO, content operations, GA4/GTM tracking, or executive reporting, pair these integrity controls with **[MarTech Fieldbook](https://jimmytech.com.au/work/martech-fieldbook/)** — a 7-skill, 6-Python-tool marketing operations kit:
+
+- **Zero Hallucinated Metrics (`page_check.py`)**: Checks every number in an HTML report or landing page against a companion JSON claims file with real source quotes.
+- **Anti-AI-Tells Prose Gate (`page_check.py --prose`)**: Flags 50+ AI writing clichés (*"delve"*, *"landscape"*, *"testament"*), filler transitions, and em-dashes while protecting SEO title/meta tags.
+- **Cannibalisation Gate & 90-Day Search Console Tracker (`change_tracker.py`)**: Confirms which URL owns a topic before editing, then schedules 7/14/28/56/90-day GSC checks to prove whether the edit helped, stayed neutral, or hurt.
+- **Real 390px Mobile Layout Check (`layout_check.py`)**: Renders pages in headless Chrome at 390px phone width and 1400px desktop width to catch horizontal scroll and wrapped metrics before shipping.
+- **Hard 12 KB Context Budget (`context_audit.py`)**: Keeps always-loaded rules under 12 KB and opens SEO/GEO, GA4/GTM, Data Ops, and Copy packs on demand.
+
+Available as the complete kit or modular standalone skills on **[Agensi Marketplace](https://www.agensi.io/creators/jimmy-faccioli)**, with a full write-up at **[jimmytech.com.au/work/martech-fieldbook/](https://jimmytech.com.au/work/martech-fieldbook/)**.
+
+Built by Jimmy Faccioli · [JimmyTech](https://jimmytech.com.au) · [Agensi Marketplace](https://www.agensi.io/creators/jimmy-faccioli) · [LinkedIn](https://www.linkedin.com/in/jimmy-faccioli-566190209/) · [GitHub](https://github.com/jfaccioli)
