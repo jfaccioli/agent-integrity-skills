@@ -6,6 +6,9 @@ Keep AI-agent work moving. Review its output separately. Keep staging honest. Ke
 
 ![Agent Integrity Skills Workflow](docs/agent-integrity-skills-hero.webp)
 
+> **▶ Watch the 65-Second Architecture & Live Terminal Walkthrough:**
+> **[Watch Demo Video (MP4)](https://jimmytech.com.au/videos/martech-fieldbook-demo.mp4)** · **[Interactive Case Study (`jimmytech.com.au`)](https://jimmytech.com.au/work/martech-fieldbook/)** · **[Agensi Creator Profile](https://www.agensi.io/creators/jimmy-faccioli)**
+
 Four portable skills for **Claude Code**, **Codex**, **Grok Build**, **Cursor**, and similar coding agents.
 
 | When this goes wrong | Add this skill | What changes |
@@ -302,6 +305,8 @@ These patterns come from building and operating SEOcluster.ai and related resear
 ---
 
 ## Related: MarTech Fieldbook (AI SEO, Content & Data Ops Kit)
+
+> **▶ [Watch the 65-Second Demo Video (`martech-fieldbook-demo.mp4`)](https://jimmytech.com.au/videos/martech-fieldbook-demo.mp4)** — see the 3.0 KB router, `/page-optimiser` cannibalisation & 90-day GSC gates, `claims_check.py`, `prose_check.py`, `layout_check.py`, and `/dual-agent-review` in action.
 
 If you use **Claude Code**, **Cursor**, or **Codex** for technical SEO, content operations, GA4/GTM tracking, or executive reporting, pair these integrity controls with **[MarTech Fieldbook](https://jimmytech.com.au/work/martech-fieldbook/)** — a 7-skill, 6-Python-tool marketing operations kit:
 
